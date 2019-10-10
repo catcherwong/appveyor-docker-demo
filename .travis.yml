@@ -20,11 +20,11 @@ branches:
     - dev
  
 script:
-  - docker pull redis
-  - docker run -p 6379:6379 --name redis6379 -d redis:latest redis-server
-  - docker run -p 6380:6379 --name redis6380 -d redis:latest redis-server  
+  # osx do not support docker 
+  - if test "$TRAVIS_OS_NAME" == "linux"; then docker pull redis; fi
+  - if test "$TRAVIS_OS_NAME" == "linux"; then docker run -p 6379:6379 --name redis6379 -d redis:latest redis-server; fi
+  - if test "$TRAVIS_OS_NAME" == "linux"; then docker run -p 6380:6379 --name redis6380 -d redis:latest redis-server; fi  
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet test -c Release ./Demo.csproj; fi
-  - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet test -c Release ./Demo.csproj; fi
