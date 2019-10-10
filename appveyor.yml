@@ -1,0 +1,57 @@
+version: 1.0.{build}
+image:
+- Ubuntu1804
+- Visual Studio 2019
+configuration: Release
+clone_depth: 50
+
+pull_requests:
+  do_not_increment_build_number: true
+
+for:
+-
+  matrix:
+    only:
+      - image: Visual Studio 2019
+  clone_folder: C:\projects\appveyor-docker-demo\
+
+  services:
+  - docker
+                  
+  before_build:    
+  - ps: docker pull redis  
+  - ps: docker run -p 6379:6379 --name redis6379 -d redis:latest redis-server
+  - ps: docker run -p 6380:6379 --name redis6380 -d redis:latest redis-server  
+  - ps: docker ps -a
+  - ps: cd C:\projects\appveyor-docker-demo
+  - ps: dotnet restore
+
+  build_script:
+  - ps: dotnet build -c Release
+
+  test_script:
+  - ps: dotnet test -c Release --no-build .\Demo.csproj
+
+-
+  matrix:
+    only:
+      - image: Ubuntu1804
+
+  clone_folder: /home/appveyor/projects/appveyor-docker-demo
+
+  services:
+  - docker  
+
+  before_build:
+  - sh: sudo docker pull redis
+  - sh: sudo docker run -p 6379:6379 --name redis6379 -d redis:latest redis-server
+  - sh: sudo docker run -p 6380:6379 --name redis6380 -d redis:latest redis-server  
+  - sh: docker ps -a
+  - sh: cd /home/appveyor/projects/appveyor-docker-demo
+  - sh: dotnet restore
+  
+  build_script:
+  - sh: dotnet build -c Release
+  
+  test_script:
+   - sh: dotnet test -c Release --no-build ./Demo.csproj
