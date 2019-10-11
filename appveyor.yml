@@ -20,8 +20,12 @@ for:
                   
   before_build:    
   - ps: docker pull redis  
+  - ps: docker pull memcached
   - ps: docker run -p 6379:6379 --name redis6379 -d redis:latest redis-server
   - ps: docker run -p 6380:6379 --name redis6380 -d redis:latest redis-server  
+  - ps: docker run -p 6388:6379 --name redis6388 -d redis:latest redis-server  
+  - ps: docker run -p 11211:11211 --name memcached1 -d memcached:latest memcached -m 64 -c 2048
+  - ps: docker run -p 11212:11211 --name memcached2 -d memcached:latest memcached -m 64 -c 2048
   - ps: docker ps -a
   - ps: cd C:\projects\appveyor-docker-demo
   - ps: dotnet restore
@@ -43,9 +47,13 @@ for:
   - docker  
 
   before_build:
-  - sh: sudo docker pull redis
-  - sh: sudo docker run -p 6379:6379 --name redis6379 -d redis:latest redis-server
-  - sh: sudo docker run -p 6380:6379 --name redis6380 -d redis:latest redis-server  
+  - sh: docker pull redis  
+  - sh: docker pull memcached
+  - sh: docker run -p 6379:6379 --name redis6379 -d redis:latest redis-server
+  - sh: docker run -p 6380:6379 --name redis6380 -d redis:latest redis-server  
+  - sh: docker run -p 6388:6379 --name redis6388 -d redis:latest redis-server  
+  - sh: docker run -p 11211:11211 --name memcached1 -d memcached:latest memcached -m 64 -c 2048
+  - sh: docker run -p 11212:11211 --name memcached2 -d memcached:latest memcached -m 64 -c 2048
   - sh: docker ps -a
   - sh: cd /home/appveyor/projects/appveyor-docker-demo
   - sh: dotnet restore
